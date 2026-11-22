@@ -5,3 +5,10 @@
 - Created the inventory app and applied the database migration for StockItem.
 - Registered StockItem in Django Admin and saved a sample Hammer record.
 - Configured Stock Staff with view-only access and Stock Managers with permission to view, add, edit, and delete stock items.
+
+## 22 November 2026
+
+- Tested the Stock Staff account in Django Admin and confirmed it could view the Hammer record with read-only fields.
+- Tested the Stock Managers account in Django Admin and confirmed it could edit and save a stock item.
+- Built a stock list at `/stock/` that requires sign-in and the `inventory.view_stockitem` permission.
+- Confirmed locally that the styled table displays the Hammer record with its SKU, quantity, and reorder level.
