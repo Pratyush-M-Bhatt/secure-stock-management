@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stock Items</title>
+    <style>
+        body {
+            max-width: 56rem;
+            margin: 3rem auto;
+            padding: 0 1rem;
+            background: #f5f7fa;
+            color: #172536;
+            font-family: system-ui, sans-serif;
+        }
+
+        h1 {
+            margin: 0 0 1.25rem;
+            font-size: 2rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #dce3eb;
+        }
+
+        th, td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #dce3eb;
+            text-align: left;
+        }
+
+        th {
+            background: #e8eef6;
+            font-weight: 600;
+        }
+
+        th:nth-child(n+3), td:nth-child(n+3) {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        td[colspan] {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Items</h1>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">SKU</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Reorder level</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.sku }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.reorder_level }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No stock items found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
