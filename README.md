@@ -12,3 +12,9 @@
 - Tested the Stock Managers account in Django Admin and confirmed it could edit and save a stock item.
 - Built a stock list at `/stock/` that requires sign-in and the `inventory.view_stockitem` permission.
 - Confirmed locally that the styled table displays the Hammer record with its SKU, quantity, and reorder level.
+
+## 23 November 2026
+
+- Added a Django form, view, and URL for creating stock items at `/stock/add/`. The view requires sign-in and the `inventory.add_stockitem` permission.
+- Moved `stock_add.html` into the app's template folder beside `stock_list.html` after Django reported a missing template.
+- Pending local verification: confirm that `stock_manager` can save an item and that `stock_staff` receives a 403 response.
