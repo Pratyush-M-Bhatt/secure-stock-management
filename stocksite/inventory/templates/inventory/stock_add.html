@@ -1,0 +1,8 @@
+<h1>Add stock item</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save item</button>
+    <a href="{% url 'stock_list' %}">Cancel</a>
+</form>
