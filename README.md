@@ -17,4 +17,5 @@
 
 - Added a Django form, view, and URL for creating stock items at `/stock/add/`. The view requires sign-in and the `inventory.add_stockitem` permission.
 - Moved `stock_add.html` into the app's template folder beside `stock_list.html` after Django reported a missing template.
-
+- Added a navy sidebar with an Inventory link and an Inventory Dashboard heading. Confirmed locally that the table still displays Hammer (HAM-001), quantity 20, and reorder level 5.
+- Next: check the table at narrow widths and add summary cards that read live inventory totals.
