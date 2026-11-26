@@ -19,3 +19,9 @@
 - Moved `stock_add.html` into the app's template folder beside `stock_list.html` after Django reported a missing template.
 - Added a navy sidebar with an Inventory link and an Inventory Dashboard heading. Confirmed locally that the table still displays Hammer (HAM-001), quantity 20, and reorder level 5.
 
+## 26 November 2026
+
+- Tested the dashboard summary cards and icons in the local development environment.
+- Confirmed that Stock Managers can add an item from the dashboard and that the inventory totals update after saving.
+- Confirmed that the Stock Staff dashboard hides the add button and that opening `/stock/add/` directly returns HTTP 403.
+- Prepared the stock edit view, route, form template, and dashboard link locally. End-to-end edit testing is pending.
