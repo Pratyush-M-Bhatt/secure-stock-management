@@ -1,0 +1,8 @@
+<h1>Edit {{ item.name }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save changes</button>
+    <a href="{% url 'stock_list' %}">Cancel</a>
+</form>

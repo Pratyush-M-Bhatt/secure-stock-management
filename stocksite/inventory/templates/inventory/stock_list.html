@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,12 +50,74 @@
         }
 
         main {
+            min-width: 0;
             padding: clamp(1rem, 4vw, 3rem);
         }
 
-        h1 {
-            margin: 0 0 1.25rem;
+        .dashboard-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .dashboard-heading h1 {
+            margin: 0;
             font-size: clamp(1.75rem, 4vw, 2.5rem);
+        }
+
+        .add-stock-button {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background: #174c63;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .add-stock-button:hover {
+            background: #215d76;
+        }
+
+        .add-stock-button:focus-visible {
+            outline: 3px solid #14889b;
+            outline-offset: 3px;
+        }
+
+        .stock-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            padding: 1.25rem;
+            border: 1px solid #dce3eb;
+            border-bottom: 4px solid #14889b;
+            border-radius: 0.75rem;
+            background: linear-gradient(150deg, #ffffff, #edf5f9);
+            box-shadow: 0 8px 18px rgb(15 31 61 / 12%);
+        }
+
+        .summary-card img {
+            display: block;
+            margin-bottom: 0.5rem;
+            object-fit: contain;
+        }
+
+        .summary-card strong {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 2rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .summary-card--alert {
+            border-bottom-color: #d68a16;
         }
 
         .table-wrapper {
@@ -73,7 +136,7 @@
 
         th,
         td {
-            padding: 0.85rem 1rem;
+            padding: 1rem 1.125rem;
             border-bottom: 1px solid #dce3eb;
             text-align: left;
         }
@@ -83,8 +146,10 @@
             font-weight: 600;
         }
 
-        th:nth-child(n+3),
-        td:nth-child(n+3) {
+        th:nth-child(3),
+        th:nth-child(4),
+        td:nth-child(3),
+        td:nth-child(4) {
             text-align: right;
             font-variant-numeric: tabular-nums;
         }
@@ -123,7 +188,35 @@
         </aside>
 
         <main>
-            <h1>Inventory Dashboard</h1>
+            <div class="dashboard-heading">
+                <h1>Inventory Dashboard</h1>
+                {% if perms.inventory.add_stockitem %}
+                    <a class="add-stock-button" href="{% url 'stock_add' %}">+ Add stock item</a>
+                {% endif %}
+            </div>
+
+            <section class="stock-summary" aria-label="Inventory summary">
+                <div class="summary-card">
+                    <img src="{% static 'inventory/images/stock-items.png' %}"
+                         alt="" width="64" height="64">
+                    <span>Stock items</span>
+                    <strong>{{ stock_item_count }}</strong>
+                </div>
+
+                <div class="summary-card">
+                    <img src="{% static 'inventory/images/units-in-stock.png' %}"
+                         alt="" width="64" height="64">
+                    <span>Units in stock</span>
+                    <strong>{{ total_units }}</strong>
+                </div>
+
+                <div class="summary-card summary-card--alert">
+                    <img src="{% static 'inventory/images/low-stock.png' %}"
+                         alt="" width="64" height="64">
+                    <span>Low-stock items</span>
+                    <strong>{{ low_stock_count }}</strong>
+                </div>
+            </section>
 
             <div class="table-wrapper" role="region"
                  aria-label="Stock items table" tabindex="0">
@@ -134,6 +227,9 @@
                             <th scope="col">SKU</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Reorder level</th>
+                            {% if perms.inventory.change_stockitem %}
+                                <th scope="col">Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -143,10 +239,18 @@
                             <td>{{ item.sku }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.reorder_level }}</td>
+                            {% if perms.inventory.change_stockitem %}
+                                <td>
+                                    <a href="{% url 'stock_edit' item.pk %}"
+                                       aria-label="Edit {{ item.name }} ({{ item.sku }})">Edit</a>
+                                </td>
+                            {% endif %}
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4">No stock items found.</td>
+                            <td colspan="{% if perms.inventory.change_stockitem %}5{% else %}4{% endif %}">
+                                No stock items found.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

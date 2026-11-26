@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import redirect, render
+from django.db.models import F, Sum
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import StockItemForm
 from .models import StockItem
@@ -9,7 +10,13 @@ from .models import StockItem
 @permission_required("inventory.view_stockitem", raise_exception=True)
 def stock_list(request):
     items = StockItem.objects.all()
-    return render(request, "inventory/stock_list.html", {"items": items})
+    context = {
+        "items": items,
+        "stock_item_count": items.count(),
+        "total_units": items.aggregate(total=Sum("quantity", default=0))["total"],
+        "low_stock_count": items.filter(quantity__lte=F("reorder_level")).count(),
+    }
+    return render(request, "inventory/stock_list.html", context)
 
 
 @login_required(login_url="/admin/login/")
@@ -24,3 +31,19 @@ def stock_add(request):
         form = StockItemForm()
 
     return render(request, "inventory/stock_add.html", {"form": form})
+
+
+@login_required(login_url="/admin/login/")
+@permission_required("inventory.change_stockitem", raise_exception=True)
+def stock_edit(request, pk):
+    item = get_object_or_404(StockItem, pk=pk)
+
+    if request.method == "POST":
+        form = StockItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect("stock_list")
+    else:
+        form = StockItemForm(instance=item)
+
+    return render(request, "inventory/stock_edit.html", {"form": form, "item": item})
