@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in | Secure Stock Management</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: clamp(1rem, 5vw, 4rem);
+            background: #edf2f6;
+            color: #142238;
+            font-family: system-ui, sans-serif;
+        }
+
+        .login-card {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            width: min(100%, 58rem);
+            overflow: hidden;
+            border: 1px solid #d9e3ed;
+            border-radius: 1.5rem;
+            background: #fff;
+            box-shadow: 0 20px 65px rgb(15 31 61 / 14%);
+        }
+
+        .brand-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 2rem;
+            padding: clamp(1.5rem, 5vw, 3.5rem);
+            background: radial-gradient(ellipse at bottom left, #18586a, #0f1f3d 75%);
+            color: #fff;
+        }
+
+        .brand-name {
+            max-width: 12ch;
+            margin: 0;
+            font-size: clamp(1.6rem, 4vw, 2.5rem);
+            font-weight: 750;
+            line-height: 1.12;
+            letter-spacing: -0.035em;
+        }
+
+        .brand-panel img {
+            display: block;
+            width: min(65%, 11rem);
+            height: auto;
+            align-self: center;
+            filter: drop-shadow(0 1rem 1rem rgb(0 0 0 / 30%));
+        }
+
+        .sign-in-panel {
+            align-self: center;
+            min-width: 0;
+            padding: clamp(1.5rem, 5vw, 3.5rem);
+        }
+
+        h1 {
+            margin: 0 0 0.5rem;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            letter-spacing: -0.04em;
+        }
+
+        .intro {
+            margin: 0 0 1.75rem;
+            color: #495c73;
+        }
+
+        .field {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 650;
+        }
+
+        .field input {
+            width: 100%;
+            min-height: 3rem;
+            padding: 0.75rem 0.875rem;
+            border: 1px solid #aab9ca;
+            border-radius: 0.65rem;
+            background: #f8fafc;
+            color: inherit;
+            font: inherit;
+        }
+
+        .errorlist {
+            margin: 0 0 0.75rem;
+            padding: 0.75rem 0.875rem 0.75rem 2rem;
+            border-radius: 0.65rem;
+            background: #fff1ef;
+            color: #8c2018;
+        }
+
+        .password-toggle {
+            min-height: 2.75rem;
+            padding: 0.5rem 0;
+            border: 0;
+            background: transparent;
+            color: #126071;
+            font: inherit;
+            font-weight: 650;
+            cursor: pointer;
+        }
+
+        .password-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .sign-in-button {
+            width: 100%;
+            min-height: 3rem;
+            padding: 0.75rem 1rem;
+            border: 0;
+            border-radius: 0.65rem;
+            background: #126071;
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .sign-in-button:hover {
+            background: #0c4b59;
+        }
+
+        :focus-visible {
+            outline: 3px solid #126071;
+            outline-offset: 3px;
+        }
+
+        @media (max-width: 650px) {
+            .login-card {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-panel {
+                flex-direction: row;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .brand-panel img {
+                width: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <div class="brand-panel">
+            <p class="brand-name">Secure Stock Management</p>
+            <img src="{% static 'inventory/images/stock-items.svg' %}"
+                 width="176" height="176" alt="">
+        </div>
+
+        <section class="sign-in-panel" aria-labelledby="sign-in-title">
+            <h1 id="sign-in-title">Sign in</h1>
+            <p class="intro">Use your inventory account to continue.</p>
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div role="alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="field">
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                    {{ form.username.errors }}
+                    {{ form.username }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.password.id_for_label }}">Password</label>
+                    {{ form.password.errors }}
+                    {{ form.password }}
+                    <button type="button" class="password-toggle"
+                            aria-controls="{{ form.password.id_for_label }}" hidden>
+                        Show password
+                    </button>
+                </div>
+
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="sign-in-button">Sign in</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const toggle = document.querySelector(".password-toggle");
+        const password = document.getElementById(toggle.getAttribute("aria-controls"));
+
+        if (password) {
+            toggle.hidden = false;
+            toggle.addEventListener("click", () => {
+                const isHidden = password.type === "password";
+                password.type = isHidden ? "text" : "password";
+                toggle.textContent = isHidden ? "Hide password" : "Show password";
+            });
+        }
+    </script>
+</body>
+</html>
