@@ -203,21 +203,21 @@
 
             <section class="stock-summary" aria-label="Inventory summary">
                 <div class="summary-card">
-                    <img src="{% static 'inventory/images/stock-items.png' %}"
+                    <img src="{% static 'inventory/images/stock-items.svg' %}"
                          alt="" width="64" height="64">
                     <span>Stock items</span>
                     <strong>{{ stock_item_count }}</strong>
                 </div>
 
                 <div class="summary-card">
-                    <img src="{% static 'inventory/images/units-in-stock.png' %}"
+                    <img src="{% static 'inventory/images/units-in-stock.svg' %}"
                          alt="" width="64" height="64">
                     <span>Units in stock</span>
                     <strong>{{ total_units }}</strong>
                 </div>
 
                 <div class="summary-card summary-card--alert">
-                    <img src="{% static 'inventory/images/low-stock.png' %}"
+                    <img src="{% static 'inventory/images/low-stock.svg' %}"
                          alt="" width="64" height="64">
                     <span>Low-stock items</span>
                     <strong>{{ low_stock_count }}</strong>
