@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F, Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_http_methods
 
 from .forms import StockItemForm
 from .models import StockItem
@@ -47,3 +48,20 @@ def stock_edit(request, pk):
         form = StockItemForm(instance=item)
 
     return render(request, "inventory/stock_edit.html", {"form": form, "item": item})
+
+
+@login_required(login_url="/admin/login/")
+@permission_required("inventory.delete_stockitem", raise_exception=True)
+@require_http_methods(["GET", "POST"])
+def stock_delete(request, pk):
+    item = get_object_or_404(StockItem, pk=pk)
+
+    if request.method == "POST":
+        item.delete()
+        return redirect("stock_list")
+
+    return render(
+        request,
+        "inventory/stock_confirm_delete.html",
+        {"item": item},
+    )

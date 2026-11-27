@@ -162,6 +162,12 @@
             text-align: center;
         }
 
+        .row-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
         @media (max-width: 700px) {
             .dashboard {
                 grid-template-columns: minmax(0, 1fr);
@@ -227,7 +233,7 @@
                             <th scope="col">SKU</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Reorder level</th>
-                            {% if perms.inventory.change_stockitem %}
+                            {% if perms.inventory.change_stockitem or perms.inventory.delete_stockitem %}
                                 <th scope="col">Actions</th>
                             {% endif %}
                         </tr>
@@ -239,16 +245,24 @@
                             <td>{{ item.sku }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.reorder_level }}</td>
-                            {% if perms.inventory.change_stockitem %}
+                            {% if perms.inventory.change_stockitem or perms.inventory.delete_stockitem %}
                                 <td>
-                                    <a href="{% url 'stock_edit' item.pk %}"
-                                       aria-label="Edit {{ item.name }} ({{ item.sku }})">Edit</a>
+                                    <div class="row-actions">
+                                        {% if perms.inventory.change_stockitem %}
+                                            <a href="{% url 'stock_edit' item.pk %}"
+                                               aria-label="Edit {{ item.name }} ({{ item.sku }})">Edit</a>
+                                        {% endif %}
+                                        {% if perms.inventory.delete_stockitem %}
+                                            <a href="{% url 'stock_delete' item.pk %}"
+                                               aria-label="Delete {{ item.name }} ({{ item.sku }})">Delete</a>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             {% endif %}
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="{% if perms.inventory.change_stockitem %}5{% else %}4{% endif %}">
+                            <td colspan="{% if perms.inventory.change_stockitem or perms.inventory.delete_stockitem %}5{% else %}4{% endif %}">
                                 No stock items found.
                             </td>
                         </tr>
