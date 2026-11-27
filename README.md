@@ -24,4 +24,10 @@
 - Tested the dashboard summary cards and icons in the local development environment.
 - Confirmed that Stock Managers can add an item from the dashboard and that the inventory totals update after saving.
 - Confirmed that the Stock Staff dashboard hides the add button and that opening `/stock/add/` directly returns HTTP 403.
-- Prepared the stock edit view, route, form template, and dashboard link locally. 
+- Prepared the stock edit view, route, form template, and dashboard link locally.
+
+## 27 November 2026
+
+- Verified that a manager can edit stock and that Staff receive HTTP 403 when opening Edit and Delete URLs directly.
+- Added a Delete confirmation page and updated the Edit form layout.
+- Verified locally that the dashboard loads the three SVG warehouse illustrations.
