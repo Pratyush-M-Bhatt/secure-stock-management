@@ -31,3 +31,6 @@
 - Verified that a manager can edit stock and that Staff receive HTTP 403 when opening Edit and Delete URLs directly.
 - Added a Delete confirmation page and updated the Edit form layout.
 - Verified locally that the dashboard loads the three SVG warehouse illustrations.
+- Added a shared stock sign-in page and a logout icon to the inventory dashboard.
+- Implemented Stock In and Stock Out locally with a permission-controlled adjustment form and a transaction that saves the new quantity and movement record together.
+- Confirmed locally that the dashboard displays the Adjust stock action for an account with the required permission.
