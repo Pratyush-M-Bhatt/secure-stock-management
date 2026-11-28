@@ -144,11 +144,26 @@ def stock_move(request, pk):
 @login_required
 @permission_required("inventory.view_stockmovement", raise_exception=True)
 def stock_history(request):
-    movements = StockMovement.objects.select_related("recorded_by").order_by(
-        "-created_at", "-pk"
-    )
+    sku = request.GET.get("sku", "").strip()
+    direction = request.GET.get("direction", "")
+
+    movements = StockMovement.objects.select_related("recorded_by")
+
+    if sku:
+        movements = movements.filter(item_sku__icontains=sku)
+
+    if direction in StockMovement.Direction.values:
+        movements = movements.filter(direction=direction)
+    else:
+        direction = ""
+
     return render(
         request,
         "inventory/stock_history.html",
-        {"movements": movements},
+        {
+            "movements": movements.order_by("-created_at", "-pk"),
+            "sku": sku,
+            "direction": direction,
+            "direction_choices": StockMovement.Direction.choices,
+        },
     )
