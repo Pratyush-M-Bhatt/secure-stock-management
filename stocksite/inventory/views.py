@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.db.models import F, Sum
+from django.db.models import F, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
@@ -11,12 +11,32 @@ from .models import StockItem, StockMovement
 @login_required
 @permission_required("inventory.view_stockitem", raise_exception=True)
 def stock_list(request):
-    items = StockItem.objects.all()
+    all_items = StockItem.objects.all()
+    items = all_items
+
+    search = request.GET.get("q", "").strip()
+    status = request.GET.get("status", "all")
+
+    if status not in {"all", "low", "out"}:
+        status = "all"
+
+    if search:
+        items = items.filter(
+            Q(name__icontains=search) | Q(sku__icontains=search)
+        )
+
+    if status == "low":
+        items = items.filter(quantity__lte=F("reorder_level"))
+    elif status == "out":
+        items = items.filter(quantity=0)
+
     context = {
-        "items": items,
-        "stock_item_count": items.count(),
-        "total_units": items.aggregate(total=Sum("quantity", default=0))["total"],
-        "low_stock_count": items.filter(quantity__lte=F("reorder_level")).count(),
+        "items": items.order_by("name", "pk"),
+        "search": search,
+        "status": status,
+        "stock_item_count": all_items.count(),
+        "total_units": all_items.aggregate(total=Sum("quantity", default=0))["total"],
+        "low_stock_count": all_items.filter(quantity__lte=F("reorder_level")).count(),
     }
     return render(request, "inventory/stock_list.html", context)
 
@@ -112,7 +132,23 @@ def stock_move(request, pk):
             if updated:
                 return redirect("stock_list")
 
-            form.add_error(None, "The item changed. Review the current quantity and try again.")
+            form.add_error(
+                None,
+                "The item changed. Review the current quantity and try again.",
+            )
             item = get_object_or_404(StockItem, pk=pk)
 
     return render(request, "inventory/stock_move.html", {"form": form, "item": item})
+
+
+@login_required
+@permission_required("inventory.view_stockmovement", raise_exception=True)
+def stock_history(request):
+    movements = StockMovement.objects.select_related("recorded_by").order_by(
+        "-created_at", "-pk"
+    )
+    return render(
+        request,
+        "inventory/stock_history.html",
+        {"movements": movements},
+    )

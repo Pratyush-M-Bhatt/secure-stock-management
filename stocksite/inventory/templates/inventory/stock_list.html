@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inventory Dashboard</title>
+
     <style>
         body {
             margin: 0;
@@ -29,6 +30,27 @@
             margin: 0 0 1.5rem;
             font-size: 1.125rem;
             font-weight: 700;
+        }
+
+        .account-panel {
+            display: grid;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #35516e;
+            border-radius: 0.5rem;
+            background: #172d46;
+            overflow-wrap: anywhere;
+        }
+
+        .account-panel span {
+            color: #c5d5e6;
+            font-size: 0.875rem;
+        }
+
+        .sidebar nav {
+            display: grid;
+            gap: 0.5rem;
         }
 
         .sidebar a {
@@ -89,8 +111,10 @@
             background: #e8eef6;
         }
 
-        .logout-button:focus-visible {
-            outline: 3px solid #174c63;
+        .logout-button:focus-visible,
+        .add-stock-button:focus-visible,
+        .stock-filters :focus-visible {
+            outline: 3px solid #14889b;
             outline-offset: 3px;
         }
 
@@ -146,9 +170,33 @@
             background: #215d76;
         }
 
-        .add-stock-button:focus-visible {
-            outline: 3px solid #14889b;
-            outline-offset: 3px;
+        .stock-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stock-filters input,
+        .stock-filters select,
+        .stock-filters button {
+            box-sizing: border-box;
+            max-width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #aab7c7;
+            border-radius: 0.5rem;
+            font: inherit;
+        }
+
+        .stock-filters button {
+            background: #174c63;
+            color: white;
+            cursor: pointer;
+        }
+
+        .stock-filters button:hover {
+            background: #215d76;
         }
 
         .table-wrapper {
@@ -219,8 +267,28 @@
     <div class="dashboard">
         <aside class="sidebar">
             <p class="brand">Secure Stock Management</p>
+
+            <div class="account-panel">
+                <span>Signed in as</span>
+                <strong>{{ request.user.get_username }}</strong>
+                <span>
+                    {% if request.user.is_superuser %}
+                        Administrator
+                    {% else %}
+                        {% for group in request.user.groups.all %}
+                            {{ group.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            No role assigned
+                        {% endfor %}
+                    {% endif %}
+                </span>
+            </div>
+
             <nav aria-label="Main navigation">
                 <a href="{% url 'stock_list' %}" aria-current="page">Inventory</a>
+                {% if perms.inventory.view_stockmovement %}
+                    <a href="{% url 'stock_history' %}">Movement history</a>
+                {% endif %}
             </nav>
         </aside>
 
@@ -271,6 +339,24 @@
                     <a class="add-stock-button" href="{% url 'stock_add' %}">+ Add stock item</a>
                 </div>
             {% endif %}
+
+            <form class="stock-filters" method="get" action="{% url 'stock_list' %}">
+                <label for="stock-search">Name or SKU</label>
+                <input id="stock-search" type="search" name="q"
+                       value="{{ search }}" placeholder="e.g. Hammer or HAM-001">
+
+                <label for="stock-status">Stock status</label>
+                <select id="stock-status" name="status">
+                    <option value="all"{% if status == "all" %} selected{% endif %}>All</option>
+                    <option value="low"{% if status == "low" %} selected{% endif %}>Low stock</option>
+                    <option value="out"{% if status == "out" %} selected{% endif %}>Out of stock</option>
+                </select>
+
+                <button type="submit">Apply filters</button>
+                {% if search or status == "low" or status == "out" %}
+                    <a href="{% url 'stock_list' %}">Clear filters</a>
+                {% endif %}
+            </form>
 
             <div class="table-wrapper" role="region"
                  aria-label="Stock items table" tabindex="0">
