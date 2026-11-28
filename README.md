@@ -34,3 +34,10 @@
 - Added a shared stock sign-in page and a logout icon to the inventory dashboard.
 - Implemented Stock In and Stock Out locally with a permission-controlled adjustment form and a transaction that saves the new quantity and movement record together.
 - Confirmed locally that the dashboard displays the Adjust stock action for an account with the required permission.
+
+## 28 November 2026
+
+- Added dashboard search by item name or SKU for Stock Staff and Stock Managers.
+- Added All, Low stock, and Out of stock filters, with a Clear filters link to restore the full inventory list.
+- Kept the summary cards based on the full inventory while the table is filtered.
+- Verified SKU search and stock status filtering on the Stock Staff dashboard.
