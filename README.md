@@ -43,3 +43,15 @@
 - Verified SKU search and stock status filtering on the Stock Staff dashboard.
 - Added SKU search and Stock in / Stock out filters to Movement history for users with the `inventory.view_stockmovement` permission.
 - Verified as Stock Manager that `HAM-001` returned two Stock out records and three Stock in records, and that Clear filters restored all six movements.
+
+## Security validation checklist
+
+Use disposable records in the local development environment. Record the expected result, actual result, and evidence for each check.
+
+- [ ] Login and logout: signed-out users are redirected to login, and protected pages require login again after logout.
+- [ ] Role permissions: Stock Staff can browse and filter inventory. Verify that direct requests to Manager-only pages return HTTP 403 for Stock Staff and that a Stock Manager can open Movement history.
+- [ ] Form and URL validation: check blank required fields, duplicate SKUs, invalid quantities, and malformed or missing item IDs. Confirm rejected input leaves inventory unchanged.
+- [ ] Stock integrity: verify that invalid withdrawals leave both the item quantity and movement history unchanged. Confirm a valid adjustment records the before and after quantities and the user.
+- [ ] SQL injection prevention: review item lookups and search filters for parameterized ORM usage, check for raw SQL assembled from request input, and verify that a SKU containing an apostrophe is handled as literal search text.
+- [ ] CSRF and delete confirmation: rerun the automated check for a delete POST without a CSRF token. Confirm it returns HTTP 403 and preserves the item. Verify that opening the confirmation page preserves the item.
+- [ ] Final review: rerun the Django tests and Bandit, review tracked files for secrets, and record the results for the demo.
