@@ -41,3 +41,5 @@
 - Added All, Low stock, and Out of stock filters, with a Clear filters link to restore the full inventory list.
 - Kept the summary cards based on the full inventory while the table is filtered.
 - Verified SKU search and stock status filtering on the Stock Staff dashboard.
+- Added SKU search and Stock in / Stock out filters to Movement history for users with the `inventory.view_stockmovement` permission.
+- Verified as Stock Manager that `HAM-001` returned two Stock out records and three Stock in records, and that Clear filters restored all six movements.
